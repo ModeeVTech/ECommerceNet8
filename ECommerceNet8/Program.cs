@@ -1,9 +1,11 @@
 using ECommerceNet8.Data;
 using ECommerceNet8.Models.AuthModels;
+using ECommerceNet8.Repositories.AuthRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid.Extensions.DependencyInjection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +57,13 @@ builder.Services.AddAuthentication(options =>
 
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
+builder.Services.AddSendGrid(options =>
+{
+    options.ApiKey = builder.Configuration.GetSection("SendGridEmailSettings")
+    .GetValue<string>("APIKey");
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
