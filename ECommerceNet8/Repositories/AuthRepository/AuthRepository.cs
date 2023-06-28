@@ -158,8 +158,117 @@ namespace ECommerceNet8.Repositories.AuthRepository
                 RefreshToken = refreshToken
             };
         }
-    
+        public async Task<Response_LoginDto> VerifyAndGenerateTokens(Request_TokenDto tokenDto)
+        {
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(tokenDto.Token);
 
+            var tokenIssuer = tokenContent.Issuer;
+            if(tokenIssuer != _configuration["JwtSettings:Issuer"])
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Token parameters are wrong"
+                    }
+                };
+            }
+            var tokenAudience = tokenContent.Audiences.ToList();
+
+            if (!tokenAudience.Contains(_configuration["JwtSettings:Audience"]))
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Token parameters are wrong"
+                    }
+                };
+            }
+
+            var userName = tokenContent.Claims.ToList()
+                .FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+            var user  = await _userManager.FindByNameAsync(userName);
+            if(user == null ||user.Id != tokenDto.UserId)
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Token parameters are wrong"
+                    }
+                };
+            }
+
+            //REFRESH TOKEN VALIDATIONS
+            var refreshTokenFromDb = await _dbContext.RefreshTokens
+                .FirstOrDefaultAsync(rf => rf.Token == tokenDto.RefreshToken);
+            if(refreshTokenFromDb == null)
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Refresh token is wrong"
+                    }
+                };
+            }
+
+            if(refreshTokenFromDb.JwtId != tokenContent.Id)
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Refresh token is wrong"
+                    }
+                };
+            }
+
+            if(refreshTokenFromDb.ExpireDate  < DateTime.UtcNow)
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Refresh token is wrong"
+                    }
+                };
+            }
+
+            var newToken = await GenerateToken(user);
+            var newRefreshToken = await CreateRefreshToken(user, newToken);
+
+            return new Response_LoginDto()
+            {
+                Result = true,
+                Errors = new List<string>(),
+                Token = newToken,
+                RefreshToken = newRefreshToken,
+                UserId = user.Id,
+            };
+        }
+        public async Task<bool> LogoutDeleteRefreshToken(string userId)
+        {
+            var refreshToken = await _dbContext.RefreshTokens
+                .FirstOrDefaultAsync(rt => rt.UserId == userId);
+            if(refreshToken == null)
+            {
+                return true;
+            }
+            _dbContext.RefreshTokens.Remove(refreshToken);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
         //PRIVATE FUNCTIONS
 
         private async Task<string> GenerateToken(ApiUser user)
@@ -233,5 +342,7 @@ namespace ECommerceNet8.Repositories.AuthRepository
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
+        
     }
 }

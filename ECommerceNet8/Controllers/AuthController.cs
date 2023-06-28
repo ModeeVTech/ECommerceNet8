@@ -3,11 +3,13 @@ using ECommerceNet8.DTOs.ApiUserDtos.Response;
 using ECommerceNet8.Models.AuthModels;
 using ECommerceNet8.Repositories.AuthRepository;
 using ECommerceNet8.Templates;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using System.Security.Claims;
 
 namespace ECommerceNet8.Controllers
 {
@@ -178,6 +180,29 @@ namespace ECommerceNet8.Controllers
             var response = await _sendGridClient.SendEmailAsync(msg);
 
             return response.IsSuccessStatusCode;
+        }
+        [HttpPost]
+        [Route("GenerateTokens")]
+        public async Task<ActionResult<Response_LoginDto>> GenerateTokens(
+            [FromBody]Request_TokenDto request)
+        {
+            var authResponse = await _authReposiotry.VerifyAndGenerateTokens(request);
+            if(authResponse.Result == false)
+            {
+                return BadRequest(authResponse);
+            }
+
+            return Ok(authResponse);
+        }
+
+        [Authorize]
+        [HttpDelete("Logout")]
+        public async Task<ActionResult> Logout()
+        {
+            string userId = HttpContext.User.FindFirstValue("uid");
+            await _authReposiotry.LogoutDeleteRefreshToken(userId);
+
+            return Ok("Logout successful");
         }
     }
 }
