@@ -8,5 +8,6 @@ namespace ECommerceNet8.Repositories.AuthRepository
         Task<Response_ApiUserRegisterDto> Register(Request_ApiUserRegisterDto userDto);
         Task<Response_ApiUserRegisterDto> RegisterAdmin(Request_ApiUserRegisterDto userDto,
             int secretKey);
+        Task<Response_LoginDto> Login (Request_LoginDto login);
     }
 }

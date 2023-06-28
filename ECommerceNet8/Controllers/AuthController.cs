@@ -138,6 +138,20 @@ namespace ECommerceNet8.Controllers
             });
         }
 
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult<Response_LoginDto>> Login(
+            [FromBody]Request_LoginDto userLogin)
+        {
+            var authResponse = await _authReposiotry.Login(userLogin);
+            if(authResponse.Result == false)
+            {
+                return BadRequest(authResponse);
+            }
+
+            return Ok(authResponse);
+        }
+
         //PRIVATE FUNCTIONS
 
         private async Task<bool> SendEmail(

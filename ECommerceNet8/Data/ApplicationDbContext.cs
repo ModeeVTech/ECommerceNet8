@@ -18,5 +18,7 @@ namespace ECommerceNet8.Data
 
             builder.ApplyConfiguration(new RoleConfiguration());
         }
+
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
     }
 }
