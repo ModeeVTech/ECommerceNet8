@@ -11,6 +11,9 @@ namespace ECommerceNet8.Repositories.ValidationsRepository
         {
             _db = db;
         }
+
+
+
         public async Task<bool> ValidateMaterial(string materialName)
         {
             var existingMaterial = await _db.Materials
@@ -20,6 +23,28 @@ namespace ECommerceNet8.Repositories.ValidationsRepository
                 return true;
             }
 
+            return false;
+        }
+        public async Task<bool> ValidateMainCategory(string mainCategoryName)
+        {
+            var existingMainCategory = await _db.MainCategories
+                .FirstOrDefaultAsync(mc=>mc.Name.ToLower() == mainCategoryName.ToLower());
+            if(existingMainCategory != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> ValidateProductColor(string productColorName)
+        {
+            var existingProductColor = await _db.ProductColors
+                .FirstOrDefaultAsync(pc=>pc.Name.ToLower() ==productColorName.ToLower());
+
+            if (existingProductColor != null)
+            {
+                return true;
+            }
             return false;
         }
     }
