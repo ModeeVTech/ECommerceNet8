@@ -1,6 +1,9 @@
+using ECommerceNet8.Configurations;
 using ECommerceNet8.Data;
 using ECommerceNet8.Models.AuthModels;
 using ECommerceNet8.Repositories.AuthRepository;
+using ECommerceNet8.Repositories.MaterialRepository;
+using ECommerceNet8.Repositories.ValidationsRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -56,8 +59,11 @@ builder.Services.AddAuthentication(options =>
 });
 
 
+builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddControllers();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+builder.Services.AddScoped<IValidationRepository, ValidationRepository>();
 
 builder.Services.AddSendGrid(options =>
 {
