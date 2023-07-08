@@ -47,5 +47,16 @@ namespace ECommerceNet8.Repositories.ValidationsRepository
             }
             return false;
         }
+
+        public async Task<bool> ValidateProductSize(string productSizeName)
+        {
+            var existingProductSize = await _db.ProductSizes
+                .FirstOrDefaultAsync(ps=>ps.Name.ToLower() == productSizeName.ToLower());
+            if(existingProductSize != null)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

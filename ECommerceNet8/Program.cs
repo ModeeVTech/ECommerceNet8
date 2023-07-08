@@ -5,6 +5,7 @@ using ECommerceNet8.Repositories.AuthRepository;
 using ECommerceNet8.Repositories.MainCategoryRepository;
 using ECommerceNet8.Repositories.MaterialRepository;
 using ECommerceNet8.Repositories.ProductColorRepository;
+using ECommerceNet8.Repositories.ProductSizeRepository;
 using ECommerceNet8.Repositories.ValidationsRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -68,6 +69,7 @@ builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 builder.Services.AddScoped<IValidationRepository, ValidationRepository>();
 builder.Services.AddScoped<IMainCategoryRepository, MainCategoryRepository>();
 builder.Services.AddScoped<IProductColorRepository, ProductColorRepository>();
+builder.Services.AddScoped<IProductSizeRepository, ProductSizeRepository>();
 
 builder.Services.AddSendGrid(options =>
 {
