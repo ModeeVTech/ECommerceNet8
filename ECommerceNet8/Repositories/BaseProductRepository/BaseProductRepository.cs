@@ -52,7 +52,7 @@ namespace ECommerceNet8.Repositories.BaseProductRepository
             Response_BaseProductWithPaging baseProductWithPaging =
                 new Response_BaseProductWithPaging();
 
-            float numberpp = (float)pageNumber;
+            float numberpp = (float)pageSize;
             var totalPages = Math.Ceiling((await GetAllAsync()).Count() / numberpp);
             int totPages = (int)totalPages;
 
