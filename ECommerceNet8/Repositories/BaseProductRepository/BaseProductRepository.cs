@@ -389,33 +389,152 @@ namespace ECommerceNet8.Repositories.BaseProductRepository
                 }
             };
         }
-        public Task<IEnumerable<Model_BaseProductCustom>> GetProductSearch(string searchText)
+
+        public async Task<IEnumerable<string>> GetProductSearchSuggestions(string searchText)
         {
-            throw new NotImplementedException();
+            var products = await FindProductBySearchText(searchText);
+
+            List<string> searchResult = new List<string>();
+
+            foreach (var product in products)
+            {
+                if(product.Name.Contains(searchText,StringComparison.OrdinalIgnoreCase))
+                {
+                    searchResult.Add(product.Name);
+                }
+                //search match in description
+                if(product.Description != null)
+                {
+                    var punctuation = product.Description.Where(char.IsPunctuation)
+                        .Distinct().ToArray();
+
+                    var words = product.Description.Split()
+                        .Select(w => w.Trim(punctuation));
+
+                    foreach(var word in words)
+                    {
+                        if(word.Contains(searchText,StringComparison.OrdinalIgnoreCase)
+                            && !searchResult.Contains(word))
+                        {
+                            searchResult.Add(word);     
+                        }
+                    }
+                }
+            }
+
+            return searchResult;
         }
 
-        public Task<IEnumerable<string>> GetProductSearchSuggestions(string searchText)
+        public async Task<IEnumerable<Model_BaseProductCustom>> GetProductSearch(string searchText)
         {
-            throw new NotImplementedException();
+            var baseProducts = await _db.BaseProducts
+                .Where(bp => bp.Name.ToLower().Contains(searchText.ToLower())
+                || bp.Description.Contains(searchText.ToLower()))
+                .Include(bp => bp.MainCategory)
+                .Include(bp => bp.Material)
+                .Include(bp => bp.productVariants).ThenInclude(pv => pv.productColor)
+                .Include(bp => bp.productVariants).ThenInclude(pv => pv.productSize)
+                .Include(bp => bp.imageBases)
+                .ToListAsync();
+
+            if(baseProducts == null)
+            {
+                return null;
+            }
+
+            var baseProductCustomReturn = baseProducts.ConvertToDtoListCustomProduct();
+
+            return baseProductCustomReturn;
         }
 
-        public Task<Response_BaseProductWithPaging> GetProductSearchWithPaging(string searchText, int pageNumber, int pageSize)
+ 
+
+        public async Task<Response_BaseProductWithPaging> GetProductSearchWithPaging(string searchText, int pageNumber, int pageSize)
         {
-            throw new NotImplementedException();
+            float numberpp = (float)pageSize;
+            float currPage = (float)pageNumber;
+            var totPages = Math.Ceiling(
+                (await GetProductSearch(searchText)).Count() / numberpp);
+            var totalPages = (int)totPages;
+
+            var baseProducts = await _db.BaseProducts
+                .Where(bp=> bp.Name.ToLower().Contains(searchText.ToLower()))
+                .Include(bp=>bp.MainCategory)
+                .Include(bp=>bp.Material)
+                .Include(bp=>bp.productVariants).ThenInclude(pv => pv.productColor)
+                .Include(bp=>bp.productVariants).ThenInclude(pv=>pv.productSize)
+                .Include(bp=>bp.imageBases)
+                .Skip(((int)pageNumber-1)* pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            if(baseProducts == null)
+            {
+                return null;
+            }
+
+            var baseProductsDTO =  baseProducts.ConvertToDtoListCustomProduct();
+
+            return new Response_BaseProductWithPaging()
+            {
+                TotalPages = totalPages,
+                baseProducts = baseProductsDTO.ToList()
+            };
         }
 
 
 
-        public Task<IEnumerable<Model_BaseProductCustom>> SearchProducts(int[] MaterialsIds, int[] mainCategoryIds, int[] productColorIds, int[] productSizeIds)
+        public async Task<IEnumerable<Model_BaseProductCustom>> SearchProducts(int[] MaterialsIds, int[] mainCategoryIds, int[] productColorIds, int[] productSizeIds)
         {
-            throw new NotImplementedException();
+            IQueryable<BaseProduct> queryBaseProducts = _db.BaseProducts
+                .Include(bp => bp.MainCategory)
+                .Include(bp => bp.Material)
+                .Include(bp => bp.productVariants).ThenInclude(pv => pv.productColor)
+                .Include(bp => bp.productVariants).ThenInclude(pv => pv.productSize)
+                .Include(bp => bp.imageBases);
+
+            if(MaterialsIds.Length > 0)
+            {
+                queryBaseProducts = queryBaseProducts
+                    .Where(bp => MaterialsIds.Contains(bp.MaterialId));
+            }
+            if(mainCategoryIds.Length > 0)
+            {
+                queryBaseProducts = queryBaseProducts
+                    .Where(bp => mainCategoryIds.Contains(bp.MainCategoryId));
+            }
+
+            if(productColorIds.Length > 0)
+            {
+                queryBaseProducts = queryBaseProducts
+                    .Where(bp => bp.productVariants.ToList()
+                    .Any(pv => productColorIds.Contains(pv.ProductColorId)));
+            }
+            if(productSizeIds.Length > 0)
+            {
+                queryBaseProducts = queryBaseProducts
+                    .Where(bp => bp.productVariants.ToList()
+                    .Any(pv => productSizeIds.Contains(pv.ProductSizeId)));
+            }
+
+            List<BaseProduct> result = await queryBaseProducts.ToListAsync();
+            var baseProductCustom = result.ConvertToDtoListCustomProduct();
+
+            return baseProductCustom;
         }
 
 
 
 
-
-  
+        //PRIVATE FUNCTIONS
+        private async Task<IEnumerable<BaseProduct>> FindProductBySearchText(string searchText)
+        {
+            return await _db.BaseProducts
+                .Where(bp=>bp.Name.ToLower().Contains(searchText.ToLower())
+                    ||bp.Description.ToLower().Contains(searchText.ToLower())
+                )
+                .ToListAsync();
+        }
 
 
 

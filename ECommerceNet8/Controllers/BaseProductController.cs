@@ -180,5 +180,65 @@ namespace ECommerceNet8.Controllers
             }
             return Ok(baseProductResponse);
         }
+
+        [HttpGet]
+        [Route("GetProductSearchSuggestions/{searchText}")]
+        public async Task<ActionResult<List<string>>> GetProductSearchSuggestions(
+            [FromRoute]string searchText)
+        {
+            var searchResponse = await _baseProductRepository
+                .GetProductSearchSuggestions(searchText);   
+
+            return Ok(searchResponse);
+        }
+
+        [HttpGet]
+        [Route("GetProductSearch/{searchText}")]
+        public async Task<ActionResult<IEnumerable<Model_BaseProductCustom>>>
+            GetProductSearch([FromRoute]string searchText)
+        {
+            var productResponse = await _baseProductRepository.GetProductSearch(searchText);
+
+            return Ok(productResponse);
+        }
+
+        [HttpGet]
+        [Route("GetProductSearchWithPaging/{searchText}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<Response_BaseProductWithPaging>>
+            GetProductSearchWithPaging([FromRoute]string searchText,
+            [FromRoute]int pageNumber, [FromRoute]int pageSize)
+        {
+            var BaseProductResponse = await _baseProductRepository
+                .GetProductSearchWithPaging(searchText, pageNumber, pageSize);
+
+            if(BaseProductResponse == null)
+            {
+                return NotFound(BaseProductResponse);
+            }
+
+            return Ok(BaseProductResponse);
+        }
+
+        [HttpGet]
+        [Route("SearchProducts")]
+        public async Task<ActionResult<IEnumerable<Model_BaseImageCustom>>>
+            SearchProducts([FromQuery] int[]MaterialIds, [FromQuery] int[]MainCategoriesIds,
+           [FromQuery] int[] ProductColorIds, [FromQuery] int[]ProductSizeIds)
+        {
+            int[] MaterialsIntIds = MaterialIds;
+            int[] MainCategoryIntIds = MainCategoriesIds;
+            int[] ProductColorIntIds = ProductColorIds;
+            int[] ProductSizeIntIds = ProductSizeIds;
+
+            var searchResult = await _baseProductRepository.SearchProducts(
+                MaterialsIntIds, MainCategoryIntIds, ProductColorIntIds, ProductSizeIntIds);
+
+            if(searchResult == null)
+            {
+                return NotFound("No Products Found with Given Parameters");
+            }
+
+            return Ok(searchResult);
+        }
     }
 }
