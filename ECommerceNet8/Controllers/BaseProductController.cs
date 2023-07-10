@@ -3,6 +3,7 @@ using ECommerceNet8.DTOs.BaseProductDtos.Request;
 using ECommerceNet8.DTOs.BaseProductDtos.Response;
 using ECommerceNet8.Models.ProductModels;
 using ECommerceNet8.Repositories.BaseProductRepository;
+using ECommerceNet8.Repositories.ValidationsRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,13 @@ namespace ECommerceNet8.Controllers
     public class BaseProductController : ControllerBase
     {
         private readonly IBaseProductRepository _baseProductRepository;
+        private readonly IValidationRepository _validationRepository;
 
-        public BaseProductController(IBaseProductRepository baseProductRepository)
+        public BaseProductController(IBaseProductRepository baseProductRepository,
+            IValidationRepository validationRepository)
         {
             _baseProductRepository = baseProductRepository;
+            _validationRepository = validationRepository;
         }
 
         [HttpGet]
@@ -82,6 +86,21 @@ namespace ECommerceNet8.Controllers
         public async Task<IActionResult> AddBaseProduct([FromBody]
         Request_BaseProduct baseProduct)
         {
+            var checkMaterial = await _validationRepository
+                .ValidateMaterialId(baseProduct.MaterialId);
+            if(checkMaterial == false)
+            {
+                return BadRequest("No Material Found With Given Id");
+            }
+
+            var checkMainCategory = await _validationRepository
+                .ValidateMainCategoryId(baseProduct.MainCategoryId);
+            if(checkMainCategory == false)
+            {
+                return BadRequest("No Main Category Found With Given Id");
+            }
+
+
             var baseProductResponse = await _baseProductRepository
                 .AddBaseProduct(baseProduct);
 
@@ -95,6 +114,21 @@ namespace ECommerceNet8.Controllers
         public async Task<ActionResult<Response_BaseProduct>> UpdateBaseProduct(
             [FromRoute]int baseProductId, [FromBody]Request_BaseProduct baseProduct)
         {
+
+            var checkMaterial = await _validationRepository
+                .ValidateMaterialId(baseProduct.MaterialId);
+            if (checkMaterial == false)
+            {
+                return BadRequest("No Material Found With Given Id");
+            }
+
+            var checkMainCategory = await _validationRepository
+                .ValidateMainCategoryId(baseProduct.MainCategoryId);
+            if (checkMainCategory == false)
+            {
+                return BadRequest("No Main Category Found With Given Id");
+            }
+
             var baseProductResponse = await _baseProductRepository
                 .UpdateBaseProduct(baseProductId, baseProduct);
 
@@ -143,6 +177,16 @@ namespace ECommerceNet8.Controllers
         public async  Task<ActionResult<Response_BaseProduct>> UpdateBaseProductMainCategory(
             [FromRoute]int baseProductId, [FromBody]Request_BaseProductMainCategory mainCategory)
         {
+
+            var checkMainCategory = await _validationRepository
+                .ValidateMainCategoryId(mainCategory.MainCategoryId);
+
+            if(checkMainCategory == false)
+            {
+                return BadRequest("No Main Category Found With Given Id");
+            }
+
+
             var baseProductResponse = await _baseProductRepository
                 .UpdateBaseProductMainCategory(baseProductId, mainCategory);
 
@@ -158,6 +202,14 @@ namespace ECommerceNet8.Controllers
         public async Task<ActionResult<Response_BaseProduct>> UpdateBaseProductMaterial
             ([FromRoute]int baseProductId, [FromBody] Request_BaseProductMaterial material)
         {
+
+            var checkMaterial = await _validationRepository
+                .ValidateMaterialId(material.MaterialId);
+            if(checkMaterial  == false)
+            {
+                return BadRequest("No Material Found With Given Id");
+            }
+
             var baseProductResponse = await _baseProductRepository
                 .UpdateBaseProductMaterial(baseProductId, material);
             if(baseProductResponse.isSuccess == false)

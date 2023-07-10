@@ -58,5 +58,29 @@ namespace ECommerceNet8.Repositories.ValidationsRepository
             }
             return false;
         }
+
+        public async Task<bool> ValidateMaterialId(int materialId)
+        {
+            var existingMaterial = await _db.Materials
+               .FirstOrDefaultAsync(m => m.Id == materialId);
+            if(existingMaterial != null)
+            {
+                return true;
+            }
+            return false;
+
+        }
+
+        public async Task<bool> ValidateMainCategoryId(int mainCategoryId)
+        {
+            var existingMainCategory = await _db.MainCategories
+                .FirstOrDefaultAsync(mc=>mc.Id == mainCategoryId);
+            if(existingMainCategory != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
