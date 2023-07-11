@@ -82,5 +82,52 @@ namespace ECommerceNet8.Repositories.ValidationsRepository
 
             return false;
         }
+
+        public async Task<bool> ValidateProductVariant(int baseProductId, int productColorId, int productSizeId)
+        {
+            var existingProductVariant = await _db.ProductVariants
+                .FirstOrDefaultAsync(pv =>
+                pv.BaseProductId == baseProductId &&
+                pv.ProductColorId == productColorId &&
+                pv.ProductSizeId == productSizeId);
+            if(existingProductVariant != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> ValidateBaseProductId(int baseProductId)
+        {
+            var existingBaseProduct = await _db.BaseProducts
+                .FirstOrDefaultAsync(bp => bp.Id == baseProductId);
+            if(existingBaseProduct != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> ValidateColorId(int colorId)
+        {
+            var existingProductColor = await _db.ProductColors
+                .FirstOrDefaultAsync(pc => pc.Id == colorId);
+            if(existingProductColor != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> ValidateSizeId(int sizeId)
+        {
+            var existingProductSize = await  _db.ProductSizes
+                .FirstOrDefaultAsync(ps=>ps.Id == sizeId);
+            if(existingProductSize != null)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

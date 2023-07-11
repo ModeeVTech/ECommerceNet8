@@ -1,4 +1,5 @@
 ﻿using ECommerceNet8.DTOs.BaseProductDtos.CustomModels;
+using ECommerceNet8.DTOs.ProductVariantDtos.CustomModels;
 using ECommerceNet8.Models.ProductModels;
 
 namespace ECommerceNet8.DTOConvertions
@@ -159,6 +160,36 @@ namespace ECommerceNet8.DTOConvertions
             };
 
             return baseProductNoInfo;
+        }
+
+        public static IEnumerable<Model_ProductVariantReturn> ConvertToDtoProductVariant
+            (this IEnumerable<ProductVariant> productVariants)
+        {
+            var returnProductVariantCustom = (from productVariant in productVariants
+                                              select new Model_ProductVariantReturn
+                                              {
+                                                  Id = productVariant.Id,
+                                                  BaseProductId = productVariant.BaseProductId,
+                                                  productColor = productVariant.productColor,
+                                                  productSize = productVariant.productSize,
+                                                  Quantity = productVariant.Quantity
+                                              });
+            return returnProductVariantCustom;
+        }
+
+        public static Model_ProductVariantWithoutObj ConvertToDtoWithoutObj
+            (this ProductVariant productVariant)
+        {
+            var productVariantWithoutObj = new Model_ProductVariantWithoutObj()
+            {
+                Id = productVariant.Id,
+                BaseProductId = productVariant.BaseProductId,
+                ProductColorId = productVariant.ProductColorId,
+                ProductSizeId = productVariant.ProductSizeId,
+                Quantity = productVariant.Quantity
+            };
+
+            return productVariantWithoutObj;
         }
 
     }
