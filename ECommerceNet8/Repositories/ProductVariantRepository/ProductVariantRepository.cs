@@ -263,36 +263,204 @@ namespace ECommerceNet8.Repositories.ProductVariantRepository
             };
         }
 
-        public Task<Response_ProductVariantWithoutObj> AddQuantity(int productVariantId, int quanity)
+        public async Task<Response_ProductVariantWithoutObj> AddQuantity(int productVariantId, int quantity)
         {
-            throw new NotImplementedException();
+            var existingProductVariant = await _db.ProductVariants
+                .FirstOrDefaultAsync(pv=>pv.Id == productVariantId);
+            if(existingProductVariant == null)
+            {
+                return new Response_ProductVariantWithoutObj()
+                {
+                    isSuccess = false,
+                    Message = "No Product Variant Found With Given Id"
+                };
+            }
+
+            var oldQty = existingProductVariant.Quantity;
+            var newQty = oldQty + quantity;
+            existingProductVariant.Quantity= newQty;
+            await _db.SaveChangesAsync();
+
+            //CONVERT TO DTO
+            var productVariantWithoutObj = existingProductVariant.ConvertToDtoWithoutObj();
+
+            return new Response_ProductVariantWithoutObj()
+            {
+                isSuccess = true,
+                Message = "Quantity Updated",
+                ProductVariantWithoutObj = new List<Model_ProductVariantWithoutObj>
+                {
+                    productVariantWithoutObj
+                }
+            };
+        }
+
+        public async Task<Response_ProductVariantWithoutObj> RemoveQuantity(int productVariantId, int quantity)
+        {
+            var existingProductVariant = await _db.ProductVariants
+                .FirstOrDefaultAsync(pv=>pv.Id == productVariantId);
+            if(existingProductVariant == null)
+            {
+                return new Response_ProductVariantWithoutObj()
+                {
+                    isSuccess = false,
+                    Message = "No Product Variant Found With Given Id"
+                };
+            }
+
+            var oldQty = existingProductVariant.Quantity;
+            var newQty = oldQty - quantity; 
+
+            if(newQty < 0)
+            {
+                return new Response_ProductVariantWithoutObj()
+                {
+                    isSuccess = false,
+                    Message = "Not Enough Items To Remove"
+                };
+            }
+
+            existingProductVariant.Quantity = newQty;
+            await _db.SaveChangesAsync();
+
+            //CONVERT TO DTO
+            var productVariantWithoutObj= existingProductVariant.ConvertToDtoWithoutObj();
+
+            return new Response_ProductVariantWithoutObj()
+            {
+                isSuccess = true,
+                Message = "Quantity Updated Successfully",
+                ProductVariantWithoutObj = new List<Model_ProductVariantWithoutObj>()
+                {
+                    productVariantWithoutObj
+                }
+            };
+        }
+
+        public async Task<IEnumerable<Response_ProductVariantCheckQty>> HasEnoughItems(Request_ProductVariantCheck productVariantToCheck)
+        {
+            List<Response_ProductVariantCheckQty> productVariantResponse =
+                new List<Response_ProductVariantCheckQty>();
+
+            foreach(var productVariant in productVariantToCheck.ProductVariants)
+            {
+                Response_ProductVariantCheckQty productVariantItemForResponse 
+                    = new Response_ProductVariantCheckQty();
+
+                var existingProductVariant = await _db.ProductVariants
+                    .FirstOrDefaultAsync(pv => pv.Id == productVariant.ProductVariantId);
+                if(existingProductVariant == null)
+                {
+                    productVariantItemForResponse.productVariantId = productVariant.ProductVariantId;
+                    productVariantItemForResponse.productExist = false;
+                    productVariantItemForResponse.hasQty = 0;
+                    productVariantItemForResponse.requestQty = productVariant.requestQty;
+                    productVariantItemForResponse.CanBeSold = false;
+
+                    productVariantResponse.Add(productVariantItemForResponse);
+                }
+                else
+                {
+                    productVariantItemForResponse.productVariantId = productVariant.ProductVariantId;
+                    productVariantItemForResponse.productExist = true;
+                    productVariantItemForResponse.hasQty = existingProductVariant.Quantity;
+                    productVariantItemForResponse.requestQty = productVariant.requestQty;
+
+                    if(existingProductVariant.Quantity < productVariant.requestQty)
+                    {
+                        productVariantItemForResponse.CanBeSold = false;
+                    }
+                    else
+                    {
+                        productVariantItemForResponse.CanBeSold = true;
+                    }
+                    productVariantResponse.Add(productVariantItemForResponse);
+                }
+
+            }
+            return productVariantResponse;
+        }
+
+
+        public async Task<IEnumerable<Response_ProductVariantSizes>> GetProductVariantSizes(int productBaseId, int colorId)
+        {
+            List<Response_ProductVariantSizes> sizes = new List<Response_ProductVariantSizes>();
+
+            var productVariants = await _db.ProductVariants
+                .Where(pv => pv.BaseProductId == productBaseId
+                && pv.ProductColorId == colorId)
+                .Include(pv => pv.productSize)
+                .ToListAsync();
+
+            if(productVariants == null)
+            {
+                return null;
+            }
+
+            foreach(var productVariant in productVariants)
+            {
+                bool doesContain = false;
+                foreach(var size in sizes)
+                {
+                    if(size.productSizeId== productVariant.ProductSizeId)
+                    {
+                        doesContain = true;
+                    }
+                }
+                if(doesContain == false)
+                {
+                    Response_ProductVariantSizes sizeReturn = new Response_ProductVariantSizes()
+                    {
+                        productSizeId = productVariant.ProductSizeId,
+                        productSizeName = productVariant.productSize.Name
+                    };
+
+                    sizes.Add(sizeReturn);
+                }
+            }
+
+            return sizes;
+        }
+
+        public async Task<Response_ProductVariantWithObj> GetProductVariantSelection(int productBaseId, int colorId, int sizeId)
+        {
+            var existingProductVariant = await _db.ProductVariants
+                .Where(pv => pv.BaseProductId == productBaseId
+                && pv.ProductColorId == colorId
+                && pv.ProductSizeId == sizeId)
+                .Include(pv => pv.productSize)
+                .Include(pv => pv.productColor)
+                .FirstOrDefaultAsync();
+
+            if(existingProductVariant == null)
+            {
+                return new Response_ProductVariantWithObj()
+                {
+                    isSuccess = false,
+                    Message = "No Product Variant Found With Given Parameters"
+                };
+            }
+
+            //CONVERT TO DTO
+            var productVariantReturnObj = existingProductVariant.ConvertToDtoWithObj();
+
+            return new Response_ProductVariantWithObj()
+            {
+                isSuccess = true,
+                Message = "Product Found",
+                ProductVariants = new List<Model_ProductVariantReturn>()
+                {
+                    productVariantReturnObj
+                }
+            };
         }
 
 
 
 
-        
-
-        public Task<Response_ProductVariantWithObj> GetProductVariantSelection(int productBaseId, int colorId, int sizeId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Response_ProductVariantSizes>> GetProductVariantSizes(int productBaseId, int colorId)
-        {
-            throw new NotImplementedException();
-        }
 
 
-        public Task<IEnumerable<Response_ProductVariantCheckQty>> HasEnoughItems(Request_ProductVariantCheck productVariantToCheck)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<Response_ProductVariantWithoutObj> RemoveQuantity(int productVariantId, int quantity)
-        {
-            throw new NotImplementedException();
-        }
 
 
 

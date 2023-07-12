@@ -30,7 +30,7 @@ namespace ECommerceNet8.Repositories.ProductVariantRepository
 
 
         //OTHER METHODS
-        Task<Response_ProductVariantWithoutObj> AddQuantity(int productVariantId, int quanity);
+        Task<Response_ProductVariantWithoutObj> AddQuantity(int productVariantId, int quantity);
         Task<Response_ProductVariantWithoutObj> RemoveQuantity(int productVariantId,int quantity);
         Task<IEnumerable<Response_ProductVariantCheckQty>> HasEnoughItems(
             Request_ProductVariantCheck productVariantToCheck);

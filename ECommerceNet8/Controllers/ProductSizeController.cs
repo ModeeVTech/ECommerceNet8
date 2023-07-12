@@ -1,5 +1,6 @@
 ﻿using ECommerceNet8.DTOs.ProducSizeDtos.Request;
 using ECommerceNet8.DTOs.ProducSizeDtos.Response;
+using ECommerceNet8.DTOs.ProductVariantDtos.Response;
 using ECommerceNet8.Models.ProductModels;
 using ECommerceNet8.Repositories.ProductSizeRepository;
 using ECommerceNet8.Repositories.ValidationsRepository;
@@ -106,6 +107,7 @@ namespace ECommerceNet8.Controllers
 
             return Ok(productSizeResponse);
         }
+
 
         #region Validations
         private async Task<bool> CheckIfSizeExist(string productSizeName)

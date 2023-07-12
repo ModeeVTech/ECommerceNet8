@@ -95,6 +95,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

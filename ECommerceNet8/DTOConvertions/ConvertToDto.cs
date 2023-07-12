@@ -192,6 +192,22 @@ namespace ECommerceNet8.DTOConvertions
             return productVariantWithoutObj;
         }
 
+        public static Model_ProductVariantReturn ConvertToDtoWithObj
+            (this ProductVariant productVariant)
+        {
+            var productVariantWIthObj = new Model_ProductVariantReturn()
+            {
+                Id = productVariant.Id,
+                BaseProductId = productVariant.BaseProductId,
+                productColor = productVariant.productColor,
+                productSize = productVariant.productSize,
+                Quantity = productVariant.Quantity
+            };
+
+            return productVariantWIthObj;
+        }
+
+
     }
 
 }

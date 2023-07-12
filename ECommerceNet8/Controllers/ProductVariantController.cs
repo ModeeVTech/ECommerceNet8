@@ -243,6 +243,64 @@ namespace ECommerceNet8.Controllers
             return Ok(productVariantResponse);
         }
 
+        [HttpPut]
+        [Route("AddQuantity/{productVariantId}/{quantity}")]
+        public async Task<ActionResult<Response_ProductVariantWithoutObj>> AddQuantity
+            ([FromRoute]int productVariantId, [FromRoute]int quantity)
+        {
+            var productVariantResponse = await _productVariantRepository
+                .AddQuantity(productVariantId, quantity);
+
+            if(productVariantResponse.isSuccess == false)
+            {
+                return NotFound(productVariantResponse);
+            }
+
+            return Ok(productVariantResponse);
+        }
+        [HttpPut]
+        [Route("RemoveQuantity/{productVariantId}/{quantity}")]
+        public async Task<ActionResult<Response_ProductVariantWithoutObj>> RemoveQuantity
+            ([FromRoute]int productVariantId, [FromRoute]int quantity)
+        {
+
+            var productVariantResponse = await _productVariantRepository
+                .RemoveQuantity(productVariantId, quantity);
+
+            if(productVariantResponse.isSuccess == false)
+            {
+                return NotFound(productVariantResponse);
+            }
+            return Ok(productVariantResponse);
+        }
+
+        [HttpPost]
+        [Route("HasEnoughItems")]
+        public async Task<ActionResult<Response_ProductVariantCheckQty>> HasEnoughItems
+            ([FromBody]Request_ProductVariantCheck productVariantToCheck)
+        {
+            var response = await _productVariantRepository
+                .HasEnoughItems(productVariantToCheck);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("GetProductSizes/{productBaseId}/{productColorId}")]
+        public async Task<ActionResult<IEnumerable<Response_ProductVariantSizes>>>
+            GetProductVariantSizes([FromRoute]int productBaseId, [FromRoute]int productColorId)
+        {
+            var productVariantSizes = await _productVariantRepository
+                .GetProductVariantSizes(productBaseId, productColorId);
+
+            if(productVariantSizes == null)
+            {
+                return NotFound("No sizes found");
+            }
+
+            return Ok(productVariantSizes);
+        }
+
 
 
         #region HelperFunctions
