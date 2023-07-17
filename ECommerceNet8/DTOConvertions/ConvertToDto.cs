@@ -1,6 +1,8 @@
 ﻿using ECommerceNet8.DTOs.BaseProductDtos.CustomModels;
 using ECommerceNet8.DTOs.ProductVariantDtos.CustomModels;
+using ECommerceNet8.DTOs.ShoppingCartDtos.Models;
 using ECommerceNet8.Models.ProductModels;
+using ECommerceNet8.Models.ShoppingCartModels;
 
 namespace ECommerceNet8.DTOConvertions
 {
@@ -207,6 +209,57 @@ namespace ECommerceNet8.DTOConvertions
             return productVariantWIthObj;
         }
 
+
+       public static Model_CartItemReturn ConvertToDtoCartItem(
+           this BaseProduct baseProduct, ProductVariant productVariant, CartItem cartItem)
+        {
+            Model_CartItemReturn cartItemReturn = new Model_CartItemReturn();
+            bool enoughItems = true;
+
+            if(productVariant.Quantity  < cartItem.Quantity)
+            {
+                enoughItems = false;
+            }
+
+            cartItemReturn.BaseProductId = baseProduct.Id;
+            cartItemReturn.BaseProductName = baseProduct.Name;
+            cartItemReturn.BaseProductDescription = baseProduct.Description;
+            cartItemReturn.Price = baseProduct.Price;
+            cartItemReturn.Discount = baseProduct.Discount;
+            cartItemReturn.TotalPricePerItem = baseProduct.TotalPrice;
+            cartItemReturn.ProductVariantId = productVariant.Id;
+
+            Model_ProductColorCustom productColorCustom = new Model_ProductColorCustom()
+            {
+                Id = productVariant.productColor.Id,
+                Name = productVariant.productColor.Name,
+            };
+            Model_ProductSizeCustom productSizeCustom = new Model_ProductSizeCustom()
+            {
+                Id = productVariant.productSize.Id,
+                Name = productVariant.productSize.Name,
+            };
+
+            cartItemReturn.ProductColor = productColorCustom;
+            cartItemReturn.ProductSize = productSizeCustom;
+
+            cartItemReturn.AvailableQuantity = productVariant.Quantity;
+            cartItemReturn.SelectedQuantity = cartItem.Quantity;
+            cartItemReturn.CanBeSold = enoughItems;
+
+            cartItemReturn.TotalPrice = cartItem.Quantity * baseProduct.TotalPrice;
+
+            if(enoughItems)
+            {
+                cartItemReturn.Message = "Item Can Be Sold";
+            }
+            else
+            {
+                cartItemReturn.Message = "Not Enough Items In Storage";
+            }
+
+            return cartItemReturn;
+        }
 
     }
 

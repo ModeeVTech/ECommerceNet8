@@ -1,6 +1,7 @@
 ﻿using ECommerceNet8.Configurations;
 using ECommerceNet8.Models.AuthModels;
 using ECommerceNet8.Models.ProductModels;
+using ECommerceNet8.Models.ShoppingCartModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,9 @@ namespace ECommerceNet8.Data
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<ProductColor> ProductColors { get; set; }
         public DbSet<ProductSize> ProductSizes { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+
     }
     
 }
