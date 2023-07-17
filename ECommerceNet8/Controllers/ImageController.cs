@@ -2,6 +2,7 @@
 using ECommerceNet8.Models.ProductModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerceNet8.Controllers
 {
@@ -85,6 +86,29 @@ namespace ECommerceNet8.Controllers
 
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpDelete]
+        [Route("DeleteImage/{baseImageId}")]
+        public async Task<IActionResult> DeleteImage([FromRoute]int baseImageId)
+        {
+            var existingImage = await _db.ImageBases
+                .FirstOrDefaultAsync(ib=>ib.Id == baseImageId);
+
+            if(existingImage == null)
+            {
+                return NotFound("No Image Found With Given Id");
+            }
+
+            if(System.IO.File.Exists(existingImage.ImagePath))
+            {
+                System.IO.File.Delete(existingImage.ImagePath);
+            }
+
+            _db.ImageBases.Remove(existingImage);
+            await _db.SaveChangesAsync();
+
+            return Ok("Image Removed Successfully");
         }
     }
 }
