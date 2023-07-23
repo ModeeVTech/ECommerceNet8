@@ -1,6 +1,7 @@
 using ECommerceNet8.Configurations;
 using ECommerceNet8.Data;
 using ECommerceNet8.Models.AuthModels;
+using ECommerceNet8.Repositories.AddressRepository;
 using ECommerceNet8.Repositories.AuthRepository;
 using ECommerceNet8.Repositories.BaseProductRepository;
 using ECommerceNet8.Repositories.MainCategoryRepository;
@@ -76,6 +77,7 @@ builder.Services.AddScoped<IProductSizeRepository, ProductSizeRepository>();
 builder.Services.AddScoped<IBaseProductRepository, BaseProductRepository>();
 builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 
 builder.Services.AddSendGrid(options =>
 {
