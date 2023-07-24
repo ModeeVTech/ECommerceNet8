@@ -9,6 +9,7 @@ using ECommerceNet8.Repositories.MaterialRepository;
 using ECommerceNet8.Repositories.ProductColorRepository;
 using ECommerceNet8.Repositories.ProductSizeRepository;
 using ECommerceNet8.Repositories.ProductVariantRepository;
+using ECommerceNet8.Repositories.ShippingTypeRepository;
 using ECommerceNet8.Repositories.ShoppingCartRepository;
 using ECommerceNet8.Repositories.ValidationsRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -78,6 +79,7 @@ builder.Services.AddScoped<IBaseProductRepository, BaseProductRepository>();
 builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IShippingTypeRepository, ShippingTypeRepository>();
 
 builder.Services.AddSendGrid(options =>
 {
