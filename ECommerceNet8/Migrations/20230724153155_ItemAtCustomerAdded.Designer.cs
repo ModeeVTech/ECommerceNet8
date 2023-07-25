@@ -4,6 +4,7 @@ using ECommerceNet8.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerceNet8.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230724153155_ItemAtCustomerAdded")]
+    partial class ItemAtCustomerAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -236,7 +239,7 @@ namespace ECommerceNet8.Migrations
                     b.Property<DateTime>("OrderTime")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("OrderUniqueIdentifier")
+                    b.Property<string>("OrderUniqueIdentfier")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -847,7 +850,7 @@ namespace ECommerceNet8.Migrations
             modelBuilder.Entity("ECommerceNet8.Models.OrderModels.OrderFromCustomer", b =>
                 {
                     b.HasOne("ECommerceNet8.Models.OrderModels.Order", "Order")
-                        .WithOne("OriginalOrderFromCustomer")
+                        .WithOne("OrignalOrderFromCustomer")
                         .HasForeignKey("ECommerceNet8.Models.OrderModels.OrderFromCustomer", "OrderId");
 
                     b.Navigation("Order");
@@ -1018,7 +1021,7 @@ namespace ECommerceNet8.Migrations
                 {
                     b.Navigation("ItemsAtCustomer");
 
-                    b.Navigation("OriginalOrderFromCustomer")
+                    b.Navigation("OrignalOrderFromCustomer")
                         .IsRequired();
                 });
 

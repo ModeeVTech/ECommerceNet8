@@ -5,7 +5,7 @@ namespace ECommerceNet8.Models.OrderModels
     public class Order
     {
         public int OrderId { get; set; }
-        public string OrderUniqueIdentfier { get; set; }
+        public string OrderUniqueIdentifier { get; set; }
         public string UserId { get; set; }
         public string UserFirstName { get; set; }
         public string UserLastName { get; set; }
@@ -22,7 +22,8 @@ namespace ECommerceNet8.Models.OrderModels
         [Column(TypeName ="datetime")]
         public DateTime OrderTime { get; set; }
         public int OrderFromCustomerId { get; set; }
-        public OrderFromCustomer OrignalOrderFromCustomer { get; set; }
+        public OrderFromCustomer OriginalOrderFromCustomer { get; set; }
+        public ICollection<ItemAtCustomer> ItemsAtCustomer { get; set; }
 
     }
 }

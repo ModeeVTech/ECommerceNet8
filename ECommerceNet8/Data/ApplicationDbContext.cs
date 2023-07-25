@@ -22,7 +22,7 @@ namespace ECommerceNet8.Data
             builder.ApplyConfiguration(new RoleConfiguration());
 
             builder.Entity<Order>()
-                .HasOne(o => o.OrignalOrderFromCustomer)
+                .HasOne(o => o.OriginalOrderFromCustomer)
                 .WithOne(oo => oo.Order)
                 .HasForeignKey<OrderFromCustomer>(oc => oc.OrderId)
                 .IsRequired(false);
@@ -52,6 +52,7 @@ namespace ECommerceNet8.Data
         public DbSet<Address> Addresses { get; set; }
         public DbSet<ShippingType> ShippingTypes { get; set; }
         public DbSet<ReturnedItemsFromCustomer> returnedItemsFromCustomers { get; set; }
+        public DbSet<ItemAtCustomer> ItemAtCustomers { get; set;}
     }
     
 }
