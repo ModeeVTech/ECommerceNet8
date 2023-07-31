@@ -2,6 +2,7 @@
 using ECommerceNet8.Models.AuthModels;
 using ECommerceNet8.Models.OrderModels;
 using ECommerceNet8.Models.ProductModels;
+using ECommerceNet8.Models.ReturnExchangeModels;
 using ECommerceNet8.Models.ShoppingCartModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,12 @@ namespace ECommerceNet8.Data
                 .WithOne(pi=>pi.OrderFromCustomer)
                 .HasForeignKey<PdfInfo>(pi=>pi.OrderFromCustomerId)
                 .IsRequired(false);
+
+            builder.Entity<ItemExchangeRequest>()
+                .HasOne(ie => ie.exchangeConfirmedPdfInfo)
+                .WithOne(ec => ec.ItemExchangeRequest)
+                .HasForeignKey<ExchangeConfirmedPdfInfo>(ec => ec.ItemExchangeRequestId)
+                .IsRequired(false);
         }
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -53,6 +60,17 @@ namespace ECommerceNet8.Data
         public DbSet<ShippingType> ShippingTypes { get; set; }
         public DbSet<ReturnedItemsFromCustomer> returnedItemsFromCustomers { get; set; }
         public DbSet<ItemAtCustomer> ItemAtCustomers { get; set;}
+
+
+        //exchange item models
+        public DbSet<ItemExchangeRequest> ItemExchangeRequests { get; set; }
+        public DbSet<ExchangeOrderItem> ExchangeOrderItems { get; set; }
+        public DbSet<ExchangeItemPending> ExchangeItemsPending { get; set; }
+        public DbSet<ExchangeItemCanceled> ExchangeItemsCanceled { get; set; }
+        public DbSet<ExchangeConfirmedPdfInfo> ExchangeConfirmedPdfInfos { get; set; }
+
+        public DbSet<ExchangeRequestFromUser> exchangeRequestsFromUsers { get; set; }
+
     }
     
 }
