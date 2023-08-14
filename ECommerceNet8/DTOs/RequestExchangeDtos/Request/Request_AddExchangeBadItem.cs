@@ -3,7 +3,7 @@
     public class Request_AddExchangeBadItem
     {
         public string ExchangeUniqueIdentifier { get; set; }
-        public string ReturnedProductVariantId { get; set; }
+        public int ReturnedProductVariantId { get; set; }
         public int Quantity { get; set; }
         public string Message { get; set; }
     }

@@ -47,6 +47,15 @@ namespace ECommerceNet8.Repositories.OrderRepository
                 .Include(o => o.OriginalOrderFromCustomer)
                 .ThenInclude(oo => oo.pdfInfo)
                 .Include(o => o.ItemsAtCustomer)
+
+                .Include(o=>o.ItemExchangeRequests)
+                .ThenInclude(ie=>ie.exchangeOrderItems)
+                .Include(o=>o.ItemExchangeRequests)
+                .ThenInclude(ie=>ie.exchangeItemsCanceled)
+                .Include(o=>o.ItemExchangeRequests)
+                .ThenInclude(ie => ie.exchangeItemsPending)
+                .Include(o=>o.ItemExchangeRequests)
+                .ThenInclude(ie=>ie.exchangeConfirmedPdfInfo)
                 .ToListAsync();
 
             return orders;
@@ -60,6 +69,15 @@ namespace ECommerceNet8.Repositories.OrderRepository
                 .Include(o => o.OriginalOrderFromCustomer)
                 .ThenInclude(oo => oo.pdfInfo)
                 .Include(o => o.ItemsAtCustomer)
+
+                .Include(o => o.ItemExchangeRequests)
+                .ThenInclude(ie => ie.exchangeOrderItems)
+                .Include(o => o.ItemExchangeRequests)
+                .ThenInclude(ie => ie.exchangeItemsCanceled)
+                .Include(o => o.ItemExchangeRequests)
+                .ThenInclude(ie => ie.exchangeItemsPending)
+                .Include(o => o.ItemExchangeRequests)
+                .ThenInclude(ie => ie.exchangeConfirmedPdfInfo)
                 .FirstOrDefaultAsync(o=>o.OrderUniqueIdentifier == OrderUniqueIdentifier);
 
             return order;
@@ -91,6 +109,16 @@ namespace ECommerceNet8.Repositories.OrderRepository
                 .Include(o => o.OriginalOrderFromCustomer)
                 .ThenInclude(oo => oo.pdfInfo)
                 .Include(o => o.ItemsAtCustomer)
+
+                .Include(o => o.ItemExchangeRequests)
+                .ThenInclude(ie => ie.exchangeOrderItems)
+                .Include(o => o.ItemExchangeRequests)
+                .ThenInclude(ie => ie.exchangeItemsCanceled)
+                .Include(o => o.ItemExchangeRequests)
+                .ThenInclude(ie => ie.exchangeItemsPending)
+                .Include(o => o.ItemExchangeRequests)
+                .ThenInclude(ie => ie.exchangeConfirmedPdfInfo)
+
                 .ToArrayAsync();
 
             return orders;

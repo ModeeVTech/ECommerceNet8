@@ -18,6 +18,6 @@ namespace ECommerceNet8.Models.OrderModels
         public string ReturnedProductVariantColor { get; set;}
         public string ReturnedProductVariantSize { get; set; }
         public int Quantity { get; set; }
-        public int CancellationReason { get; set; }
+        public string CancelationReason { get; set; }
     }
 }

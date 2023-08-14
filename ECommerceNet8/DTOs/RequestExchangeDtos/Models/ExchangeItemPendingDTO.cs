@@ -2,7 +2,7 @@
 
 namespace ECommerceNet8.DTOs.RequestExchangeDtos.Models
 {
-    public class ExchangeItemPending
+    public class ExchangeItemPendingDTO
     {
 
         public int Id { get; set; }

@@ -16,6 +16,6 @@ namespace ECommerceNet8.Models.OrderModels
         public string ProductVariantSize { get; set; }
         [Column(TypeName ="decimal(18,2)")]
         public decimal PricePaidPerItem { get; set; }
-        public int Quantity;
+        public int Quantity { get; set; }
     }
 }

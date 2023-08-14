@@ -19,7 +19,7 @@ namespace ECommerceNet8.Models.OrderModels
         public string ReturnedProductVariantSize { get; set; }
 
         public int ExchangedProductVariantId { get; set; }
-        public string ExchangedProductVariantName { get;set; }
+        public string ExchangedProductVariantColor { get;set; }
         public string ExchangedProductVariantSize { get; set; }
 
         public int Quantity { get; set; }

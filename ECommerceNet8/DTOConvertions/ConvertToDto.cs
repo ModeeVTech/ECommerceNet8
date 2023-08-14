@@ -1,6 +1,9 @@
 ﻿using ECommerceNet8.DTOs.BaseProductDtos.CustomModels;
 using ECommerceNet8.DTOs.ProductVariantDtos.CustomModels;
+using ECommerceNet8.DTOs.RequestExchangeDtos.Models;
+using ECommerceNet8.DTOs.RequestExchangeDtos.Response;
 using ECommerceNet8.DTOs.ShoppingCartDtos.Models;
+using ECommerceNet8.Models.OrderModels;
 using ECommerceNet8.Models.ProductModels;
 using ECommerceNet8.Models.ShoppingCartModels;
 
@@ -259,6 +262,114 @@ namespace ECommerceNet8.DTOConvertions
             }
 
             return cartItemReturn;
+        }
+
+
+        public static Response_AllExchangedGoodItems ConvertToDtoGoodItems(
+            this ItemExchangeRequest itemExchangeRequest)
+        {
+            Response_AllExchangedGoodItems allExchangedGoodItems = new Response_AllExchangedGoodItems();
+
+            allExchangedGoodItems.OrderUniqueIdentifier = itemExchangeRequest.OrderUniqueIdentifier;
+            allExchangedGoodItems.ExchangeUniqueIdentfier = itemExchangeRequest.ExchangeUniqueIdentifier;
+
+            List<ExchangeGoodItem> exchangeGoodItems = new List<ExchangeGoodItem>();
+
+            foreach(var item in itemExchangeRequest.exchangeOrderItems)
+            {
+                ExchangeGoodItem newExchangeGoodItem = new ExchangeGoodItem();
+
+                newExchangeGoodItem.Id = item.Id;
+                newExchangeGoodItem.BaseProductId = item.BaseProductId;
+                newExchangeGoodItem.BaseProductName = item.BaseProductName;
+                newExchangeGoodItem.ReturnedProductVariantId = item.ReturnedProductVariantId;
+                newExchangeGoodItem.ReturnedProductVariantColor = item.ReturnedProductVariantColor;
+                newExchangeGoodItem.ReturnedProductVariantSize = item.ReturnedProductVariantSize;
+                newExchangeGoodItem.ExchangedProductVariantId = item.ExchangedProductVariantId;
+                newExchangeGoodItem.ExchangedProductVariantColor = item.ExchangedProductVariantColor;
+                newExchangeGoodItem.ExchangedProductVariantSize = item.ExchangedProductVariantSize;
+                newExchangeGoodItem.Quantity = item.Quantity;
+                newExchangeGoodItem.Message = item.Message;
+
+                exchangeGoodItems.Add(newExchangeGoodItem);
+            }
+
+            allExchangedGoodItems.exchangeGoodItems = exchangeGoodItems;
+
+            return allExchangedGoodItems;
+        }
+
+        public static Response_AllExchangePendingItems ConverToDtoPendingItems(
+            this ItemExchangeRequest itemExchangeRequest)
+        {
+            Response_AllExchangePendingItems allExchangePendingItems =
+                new Response_AllExchangePendingItems();
+
+            allExchangePendingItems.OrderUniqueIdentifier =
+                itemExchangeRequest.OrderUniqueIdentifier;
+
+            allExchangePendingItems.ExchangeUniqueIdentifier =
+                itemExchangeRequest.ExchangeUniqueIdentifier;
+
+            List<DTOs.RequestExchangeDtos.Models.ExchangeItemPendingDTO> exchangeItemPendingList = 
+                new List<DTOs.RequestExchangeDtos.Models.ExchangeItemPendingDTO>();
+
+            foreach(var item in itemExchangeRequest.exchangeItemsPending)
+            {
+                DTOs.RequestExchangeDtos.Models.ExchangeItemPendingDTO exchangeItemPending 
+                    = new();
+
+                exchangeItemPending.Id = item.Id;
+                exchangeItemPending.BaseProductId = item.BaseProductId;
+                exchangeItemPending.BaseProductName = item.BaseProductName;
+                exchangeItemPending.RetrunedProductVariantId = item.ReturnedProductVariantId;
+                exchangeItemPending.RetrunedProductVariantColor = 
+                    item.ReturnedProductVariantColor;
+                exchangeItemPending.ReturnedProductVariantSize = 
+                    item.ReturnedProductVariantSize;
+                exchangeItemPending.Quantity = item.Quantity;
+                exchangeItemPending.Message = item.Message;
+
+                exchangeItemPendingList.Add(exchangeItemPending);
+            }
+
+            allExchangePendingItems.ExchangeItemsPending = exchangeItemPendingList;
+
+            return allExchangePendingItems;
+        }
+
+        public static Response_AllExchangeBadItems ConvertToDtoBadItems
+            (this ItemExchangeRequest itemExchangeRequest)
+        {
+            Response_AllExchangeBadItems response_AllExchangeBadItems = 
+                new Response_AllExchangeBadItems();
+
+            response_AllExchangeBadItems.OrderUniqueIdentifier =
+                itemExchangeRequest.OrderUniqueIdentifier;
+            response_AllExchangeBadItems.ExchangeUniqueIdentifier =
+                itemExchangeRequest.ExchangeUniqueIdentifier;
+
+            List<ExchangeBadItem> exchangeBadItems = new List<ExchangeBadItem>();
+
+            foreach(var item in itemExchangeRequest.exchangeItemsCanceled)
+            {
+                ExchangeBadItem exchangeBadItem = new ExchangeBadItem();
+                exchangeBadItem.Id = item.Id;
+                exchangeBadItem.BaseProductId  = item.BaseProductId;
+                exchangeBadItem.BaseProductName = item.BaseProductName;
+                exchangeBadItem.ReturnedProductVariantId = item.ReturnedProductVariantId;
+
+                exchangeBadItem.ReturnedProductVariantColor = 
+                    item.ReturnedProductVariantColor;
+                exchangeBadItem.ReturnedProductVariantSize = item.ReturnedProductVariantSize;
+                exchangeBadItem.Quantity = item.Quantity;
+                exchangeBadItem.CanceliationReason = item.CancelationReason;
+
+                exchangeBadItems.Add(exchangeBadItem);
+            }
+            response_AllExchangeBadItems.exchangeBadItems = exchangeBadItems;
+            return response_AllExchangeBadItems;
+
         }
 
     }
