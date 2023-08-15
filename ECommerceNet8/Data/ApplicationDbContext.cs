@@ -71,6 +71,9 @@ namespace ECommerceNet8.Data
 
         public DbSet<ExchangeRequestFromUser> exchangeRequestsFromUsers { get; set; }
 
+
+        //return item models
+        public DbSet<ReturnRequestFromUser> returnRequestsFromUsers { get; set;}
     }
     
 }
