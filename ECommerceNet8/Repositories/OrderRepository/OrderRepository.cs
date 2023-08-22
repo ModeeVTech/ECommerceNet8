@@ -56,6 +56,12 @@ namespace ECommerceNet8.Repositories.OrderRepository
                 .ThenInclude(ie => ie.exchangeItemsPending)
                 .Include(o=>o.ItemExchangeRequests)
                 .ThenInclude(ie=>ie.exchangeConfirmedPdfInfo)
+
+                .Include(o=>o.itemReturnRequests)
+                .ThenInclude(ir=>ir.itemsGoodForRefund)
+                .Include(o=>o.itemReturnRequests)
+                .ThenInclude(ir=>ir.itemsBadForRefund)
+
                 .ToListAsync();
 
             return orders;
@@ -78,6 +84,12 @@ namespace ECommerceNet8.Repositories.OrderRepository
                 .ThenInclude(ie => ie.exchangeItemsPending)
                 .Include(o => o.ItemExchangeRequests)
                 .ThenInclude(ie => ie.exchangeConfirmedPdfInfo)
+
+                .Include(o => o.itemReturnRequests)
+                .ThenInclude(ir => ir.itemsGoodForRefund)
+                .Include(o => o.itemReturnRequests)
+                .ThenInclude(ir => ir.itemsBadForRefund)
+
                 .FirstOrDefaultAsync(o=>o.OrderUniqueIdentifier == OrderUniqueIdentifier);
 
             return order;

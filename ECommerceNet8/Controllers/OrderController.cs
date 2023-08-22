@@ -1,9 +1,12 @@
 ﻿using ECommerceNet8.DTOs.OrderDtos.Request;
 using ECommerceNet8.DTOs.OrderDtos.Response;
+using ECommerceNet8.DTOs.RefundRequestDtos.Request;
+using ECommerceNet8.DTOs.RefundRequestDtos.Response;
 using ECommerceNet8.DTOs.RequestExchangeDtos.Request;
 using ECommerceNet8.DTOs.RequestExchangeDtos.Response;
 using ECommerceNet8.Models.OrderModels;
 using ECommerceNet8.Repositories.OrderRepository;
+using ECommerceNet8.Repositories.RefundRepository;
 using ECommerceNet8.Repositories.ReturnExchangeRequestRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +20,15 @@ namespace ECommerceNet8.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IReturnExchangeRequestRepository _returnExchangeRequestRepository;
+        private readonly IRefundRepository _refundRepository;
 
         public OrderController(IOrderRepository orderRepository, 
-            IReturnExchangeRequestRepository returnExchangeRequestRepository)
+            IReturnExchangeRequestRepository returnExchangeRequestRepository,
+            IRefundRepository refundRepository)
         {
             _orderRepository = orderRepository;
             _returnExchangeRequestRepository = returnExchangeRequestRepository;
+            _refundRepository = refundRepository;
         }
 
 
@@ -459,6 +465,196 @@ namespace ECommerceNet8.Controllers
                 return BadRequest(response);
             }
 
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("CreateRefundOrder")]
+        public async Task<ActionResult<Response_Refund>> CreateRefundOrder
+            ([FromBody]Request_Refund requestRefund)
+        {
+            var refundResponse = await _refundRepository.CreateRefundOrder(requestRefund);
+            if(refundResponse.isSuccess == false)
+            {
+                return BadRequest(refundResponse);
+            }
+
+            return Ok(refundResponse);
+        }
+
+        [HttpGet]
+        [Route("GetRefundRequest/{exchangeUniqueIdentifier}")]
+        public async Task<ActionResult<Response_RefundFullInfo>> GetRefundRequest(
+            [FromRoute] string exchangeUniqueIdentifier)
+        {
+            var refundRequest = await _refundRepository.GetRefundRequest(exchangeUniqueIdentifier);
+
+            if(refundRequest.isSuccess == false)
+            {
+                return BadRequest(refundRequest);
+            }
+
+            return Ok(refundRequest);
+        }
+
+        [HttpPost]
+        [Route("AddReturnedGoodItem")]
+        public async Task<ActionResult<Response_RefundIsSuccess>> AddReturnedGoodItem
+            ([FromBody]Request_AddGoodRefundItem addGoodRefundItem)
+        {
+            var returnedItemResponse = await _refundRepository
+                .AddReturnedGoodItem(addGoodRefundItem);
+            if(returnedItemResponse.isSuccess == false)
+            {
+                return BadRequest(returnedItemResponse);
+            }
+
+            return Ok(returnedItemResponse);
+        }
+
+        [HttpPost]
+        [Route("CancelGoodReturnItem")]
+        public async Task<ActionResult<Response_RefundIsSuccess>> CancelGoodReturnItem
+            ([FromBody]Request_CancelRefundItem cancelGoodRefundItem)
+        {
+            var returnResponse = await _refundRepository
+                .CancelGoodReturnedItem(cancelGoodRefundItem);
+            if(returnResponse.isSuccess == false)
+            {
+                return BadRequest(returnResponse);
+            }
+
+            return Ok(returnResponse);
+        }
+
+        [HttpPost]
+        [Route("AddReturnedBadItem")]
+        public async Task<ActionResult<Response_RefundIsSuccess>>  AddReturnedBadItem
+            ([FromBody]Request_AddBadRefundItem addBadRefundItem)
+        {
+            var returnResponse = await _refundRepository
+                .AddReturnedBadItem(addBadRefundItem);
+
+            if(returnResponse.isSuccess == false)
+            {
+                return BadRequest(returnResponse);
+            }
+
+            return Ok(returnResponse);
+        }
+
+        [HttpPost]
+        [Route("CancelBadReturnItem")]
+        public async Task<ActionResult<Response_RefundIsSuccess>> CancelBadReturnItem
+            ([FromBody]Request_CancelRefundItem cancelRefundItem)
+        {
+            var returnResponse = await _refundRepository.
+                CancelBadReturnItem(cancelRefundItem);
+
+            if(returnResponse.isSuccess == false)
+            {
+                return BadRequest(returnResponse);
+            }
+            return Ok(returnResponse);
+        }
+
+        [HttpPost]
+        [Route("SetOrderAsRefunded/{exchangeUniqueIdentifier}")]
+        public async Task<ActionResult<Response_RefundIsSuccess>> SetOrderAsRefunded
+            ([FromRoute]string exchangeUniqueIdentifier)
+        {
+            var response = await _refundRepository
+                .SetOrderAsRefunded(exchangeUniqueIdentifier);
+            if(response.isSuccess == false)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("CancelOrderAsRefunded/{exchangeUniqueIdentifier}")]
+        public async Task<ActionResult<Response_RefundIsSuccess>> CancelOrderAsRefunded
+            ([FromRoute]string exchangeUniqueIdentifier)
+        {
+            var response = await _refundRepository
+                .CancelOrderAsRefunded(exchangeUniqueIdentifier);
+            if( response.isSuccess == false)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("SetOrderAsDone/{exchangeUniqueIdentifier}")]
+        public async Task<ActionResult<Response_RefundIsSuccess>> SetOrderAsDone
+            ([FromRoute]string exchangeUniqueIdentifier)
+        {
+            var response = await _refundRepository.SetOrderAsDone(exchangeUniqueIdentifier);
+            if(response.isSuccess == false)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("CancelOrderAsDone/{exchangeUniqueIdentifier}")]
+        public async Task<ActionResult<Response_RefundIsSuccess>>  CancelOrderAsDone
+            ([FromRoute]string exchangeUniqueIdentifier)
+        {
+            var response= await _refundRepository.CancelOrderAsDone(exchangeUniqueIdentifier);
+
+            if(response.isSuccess == false)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("GetAllGoodRefundItems/{exchangeUniqueIdentifier}")]
+        public async Task<ActionResult<Response_GoodRefundItems>> GetAllGoodRefundItems
+            ([FromRoute]string exchangeUniqueIdentifier)
+        {
+            var response = await _refundRepository
+                .GetAllGoodRefundItems(exchangeUniqueIdentifier);
+            if(response.isSuccess == false)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("GetAllBadRefundItems/{exchangeUniqueIdentifier}")]
+        public async Task<ActionResult<Response_BadRefundItems>> GetAllBadRefundItems
+            ([FromRoute]string exchangeUniqueIdentifier)
+        {
+            var response = await _refundRepository
+                .GetAllBadRefundItems(exchangeUniqueIdentifier);
+            if(response.isSuccess == false)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("AllItemsCheckedSendEmail/{exchangeUniqueIdentifier}")]
+        public async Task<ActionResult<Response_RefundIsSuccess>> AllItemsCheckedSendEmail
+            ([FromRoute]string exchangeUniqueIdentifier)
+        {
+            var response = await _refundRepository
+                .AllItemsCheckedSendEmail(exchangeUniqueIdentifier);
+            if(response.isSuccess == false)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
     }

@@ -28,5 +28,8 @@ namespace ECommerceNet8.Models.OrderModels
         public ICollection<ReturnedItemsFromCustomer> ReturnedItemsFromCustomers { get; set; }
         public ICollection<ItemExchangeRequest> ItemExchangeRequests { get; set; }
 
+
+        public ICollection<ItemReturnRequest> itemReturnRequests { get; set; }
+
     }
 }

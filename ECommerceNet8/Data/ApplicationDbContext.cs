@@ -74,6 +74,10 @@ namespace ECommerceNet8.Data
 
         //return item models
         public DbSet<ReturnRequestFromUser> returnRequestsFromUsers { get; set;}
+
+        public DbSet<ItemReturnRequest> ItemReturnRequests { get; set; }
+        public DbSet<ItemGoodForRefund> ItemsGoodForRefund { get; set; }
+        public DbSet<ItemBadForRefund> ItemsBadForRefund { get; set;}
     }
     
 }
