@@ -954,11 +954,13 @@ namespace ECommerceNet8.Repositories.ReturnExchangeRequestRepository
             {
                 returnItemAtCustomer.Quantity = returnItemAtCustomer.Quantity 
                     + exchangeGoodItem.Quantity;
+
+                await _db.SaveChangesAsync();
             }
 
             //TODO return back quantity to productVariant with ExchangeProductVariant
             await AddItemQuantity(exchangeGoodItemFromDb.ExchangedProductVariantId,
-                exchangeGoodItemFromDb.Quantity);
+                exchangeGoodItem.Quantity);
             //TODO remove  ExchangeItem
             _db.ExchangeOrderItems.Remove(exchangeGoodItemFromDb);
             await _db.SaveChangesAsync();
@@ -1083,7 +1085,7 @@ namespace ECommerceNet8.Repositories.ReturnExchangeRequestRepository
             }
             else
             {
-                exchangePendingItem.Quantity = exchangePendingItem.Quantity +
+                existingPendingItem.Quantity = existingPendingItem.Quantity +
                     exchangePendingItem.Quantity;
                 exchangePendingItem.Message = exchangePendingItem.Message;
                 await _db.SaveChangesAsync();

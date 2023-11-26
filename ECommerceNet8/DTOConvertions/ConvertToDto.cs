@@ -330,6 +330,8 @@ namespace ECommerceNet8.DTOConvertions
                 exchangeItemPending.Quantity = item.Quantity;
                 exchangeItemPending.Message = item.Message;
 
+                exchangeItemPending.PricePerItemPaid = item.PricePerItemPaid;
+
                 exchangeItemPendingList.Add(exchangeItemPending);
             }
 

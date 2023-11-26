@@ -147,6 +147,20 @@ namespace ECommerceNet8.Repositories.AuthRepository
                 };
             }
 
+            bool isPasswordValid = await _userManager.CheckPasswordAsync(user, login.Password);
+
+            if (!isPasswordValid)
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Wrong login credentials"
+                    }
+                };
+            }
+
             var token = await GenerateToken(user);
             var refreshToken = await CreateRefreshToken(user, token);
 
